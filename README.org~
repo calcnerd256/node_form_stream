@@ -12,13 +12,7 @@ okay, here's the goal:
 :   ).on(
 :    "_another attribute",
 :    function(stream){
-:     stream.on(
-:      "data",
-:      function(chunk){console.log(chunk.toString());}
-:     ).on(
-:      "end",
-:      console.log.bind(console, req)
-:     );
+:     stream.on("data", function(chunk){console.log(chunk.toString());});
 :    }
 :   ).on(
 :    "end",
