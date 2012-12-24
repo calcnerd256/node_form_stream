@@ -1,0 +1,24 @@
+* Node form stream
+(maybe this already exists somewhere; I didn't do the literature review)
+
+okay, here's the goal:
+: require("http").createServer(
+:  function(req, res){
+:   new (require("./form_stream").FormEmitter)(req).on(
+:    "_attribute",
+:    function(stream){
+:     stream.on("data", function(chunk){res.write(chunk+"");});
+:    }
+:   ).on(
+:    "_another attribute",
+:    function(stream){
+:     stream.on("data", function(chunk){console.log(chunk.toString());});
+:    }
+:   ).on(
+:    "end",
+:    function(){
+:     res.end();//no, don't actually do this part this way
+:    }
+:   );
+:  }
+: ).listen(8080)
