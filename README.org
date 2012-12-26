@@ -4,7 +4,7 @@
 okay, here's the goal:
 : require("http").createServer(
 :  function(req, res){
-:   new (require("./form_stream").FormEmitter)(req).on(
+:   new (require("./form_stream").FormStream)(req).on(
 :    "_attribute",
 :    function(stream){
 :     stream.on("data", function(chunk){res.write(chunk+"");});

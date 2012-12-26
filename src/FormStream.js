@@ -15,22 +15,6 @@ var FunctionImageStream = functionImageStream.FunctionImageStream;
 function bufferChunks(stream, callback){
  //data from the readable stream doesn't come in all at once
 
- var buffer = [];
-
- stream.on("data", Array.prototype.push.bind(buffer));
- stream.on(
-     "end",
-     compose(
-	 callback,
-	 Array.prototype.join.bind(buffer, "")
-     )
- );
- return stream;
-
- //stop reading after the above line, because nothing else in this function actually happens
-
-
- //this whole function body could be written as
  return (
   function(buffer){
    return stream.on(
@@ -43,7 +27,7 @@ function bufferChunks(stream, callback){
   }
  )([]);
 
- //or even as
+ //this could be written as
  return (
   function(dictionaryListen, buffer){
    return dictionaryListen(
