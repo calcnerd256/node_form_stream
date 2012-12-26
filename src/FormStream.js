@@ -99,7 +99,7 @@ function pipeStream(source, target){
 // http://www.w3.org/TR/html401/interact/forms.html#form-content-type
 function decodeUriParameter(chunk){
  return decodeURIComponent(
-  chunk.toString().replace("/\\+/g", " ")
+  chunk.toString().replace(/\+/g, " ")
  );
 }
 function uriEncodedChunkSliceLength(chunk, buffer){
