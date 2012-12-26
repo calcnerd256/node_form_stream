@@ -1,0 +1,5 @@
+{
+	"name": "node_form_stream",
+	"version": "0.0.0",
+	"main": "./src/node_form_stream.js"
+}
