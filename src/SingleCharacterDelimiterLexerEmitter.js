@@ -28,19 +28,23 @@ SingleCharacterDelimiterLexerEmitter.prototype.delimit = function delimit(last){
  if(!last)
   this.emitter.emit("lexer", this.buffer = new EventSponge());
 };
+
 SingleCharacterDelimiterLexerEmitter.prototype.handleChunk = function handleChunk(chunk){
+
  if(chunk.toString().indexOf(this.delimiter) == -1)
   return this.buffer.emit("data", chunk);
+
  var tokens = chunk.toString().split(this.delimiter);//not binary-safe
  var remaining = tokens.pop();
- remaining.map(
+ tokens.map(
   function(token){
    this.buffer.emit("data", token);
    this.delimit();
-  }
+  }.bind(this)
  );
  this.buffer.emit("data", remaining);
 };
+
 SingleCharacterDelimiterLexerEmitter.prototype.on = function on(){
  applyFrom(this.emitter, "on", arguments);
  return this;

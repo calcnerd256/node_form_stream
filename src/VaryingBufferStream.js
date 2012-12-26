@@ -1,4 +1,4 @@
-
+var EventEmitter = require("events").EventEmitter;
 
 function VaryingBufferStream(stream, measure){
  this.measure = measure;
@@ -21,3 +21,5 @@ VaryingBufferStream.prototype.on = function on(){
  this.emitter.on.apply(this.emitter, arguments);
  return this;
 }
+
+this.VaryingBufferStream = VaryingBufferStream;

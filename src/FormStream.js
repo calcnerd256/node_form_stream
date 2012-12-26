@@ -11,44 +11,12 @@ var EventSponge = eventSponge.EventSponge;
 var compose = functionImageStream.compose;
 var FunctionImageStream = functionImageStream.FunctionImageStream;
 
-
-function bufferChunks(stream, callback){
- //data from the readable stream doesn't come in all at once
-
- return (
-  function(buffer){
-   return stream.on(
-    "data",
-    [].push.bind(buffer)
-   ).on(
-    "end",
-    [].join.bind(buffer, "")
-   );
-  }
- )([]);
-
- //this could be written as
- return (
-  function(dictionaryListen, buffer){
-   return dictionaryListen(
-    stream,
-    {
-     "data": [].push.bind(buffer),
-     "end": [].join.bind(buffer, "")
-    }
-   );
-  }
- )(
-  function dictionaryListen(emitter, listeners){
+function dictionaryListen(emitter, listeners){
    for(var channel in listeners)
     emitter.on(channel, listeners[channel]);
    return emitter;
-  },
-  []
- );
- //and dictionaryListen could be written as
- (
-  function(emitter, listeners){
+
+ //could be written as
    var alist = (
     function dictionaryToAttributeList(dictionary){
      return Object.keys(dictionary).map(
@@ -64,11 +32,7 @@ function bufferChunks(stream, callback){
     },
     emitter
    );
-  }
- )
  //but even that can be written more tersely as
- (
-  function(emitter, listeners){
    return Object.keys(listeners).map(
     function(k){
      return [k, listeners[k]];
@@ -77,31 +41,55 @@ function bufferChunks(stream, callback){
     (function(){}).apply.bind(emitter.on),
     emitter
    );
-  }
- )
  //though, if you already had dictionaryToAttributeList defined, then
- (
-  function(emitter, listeners){
    return dictionaryToAttributeList(listeners).reduce(
     (function(){}).apply.bind(emitter.on),
     emitter
    );
-  }
- )
  //would be the shortest implementation of dictionaryListen I can think of offhand
  //or at least the shortest one that meets my criteria for macho elegance
+
+}
+
+function bufferChunks(stream, callback){
+ //data from the readable stream doesn't come in all at once
+
+ return (
+  function(buffer){
+   return stream.on(
+    "data",
+    [].push.bind(buffer)
+   ).on(
+    "end",
+    compose(callback, [].join.bind(buffer, ""))
+   );
+  }
+ )([]);
+
+ //this could be written as
+ return (
+  function(buffer){
+   return dictionaryListen(
+    stream,
+    {
+     "data": [].push.bind(buffer),
+     "end": compose(callback, [].join.bind(buffer, ""))
+    }
+   );
+  }
+ )([]);
 }
 
  function forwardChannel(source, channel, target){
   return source.on(channel, target.emit.bind(target, channel));
  }
- function pipeStream(source, target){
+function pipeStream(source, target){
   return forwardChannel(
    forwardChannel(source, "data", target),
    "end",
    target
   );
- }
+}
 
 
 // http://www.w3.org/TR/html401/interact/forms.html#form-content-type
@@ -118,11 +106,12 @@ function uriEncodedChunkSliceLength(chunk, buffer){
  return l;
 }
 
-function FormStream(){
+function FormStream(stream){
  this.input = new EventEmitter();
+ if(stream) pipeStream(stream, this.input);
  this.output = new EventEmitter();
  var that = this;
- new SingleCharacterDelimiterLexerEmitter(this.input, "&").on(
+ this.lexerEmitter = new SingleCharacterDelimiterLexerEmitter(this.input, "&").on(
   "lexer",
   this.handleLexer.bind(this)
  ).on(
@@ -150,7 +139,7 @@ FormStream.prototype.handleLexer = function handleLexer(lexer){
   function(channel){
    var input = param.andAfter;
    this.output.emit(
-    "_" + channel,
+    "s_" + channel,
     new FunctionImageStream(
      new VaryingBufferStream(
       new SlicingStream(input, 1),

@@ -4,13 +4,16 @@
 okay, here's the goal:
 : require("http").createServer(
 :  function(req, res){
-:   new (require("./form_stream").FormStream)(req).on(
-:    "_attribute",
+:   new (require("form_stream").FormStream)(req).on(
+:    "s_attribute",
 :    function(stream){
-:     stream.on("data", function(chunk){res.write(chunk+"");});
+:     stream.on(
+:      "data",
+:      function(chunk){res.write(chunk+"");}
+:     ).resume();
 :    }
 :   ).on(
-:    "_another attribute",
+:    "s_another attribute",
 :    function(stream){
 :     stream.on(
 :      "data",
@@ -18,7 +21,7 @@ okay, here's the goal:
 :     ).on(
 :      "end",
 :      console.log.bind(console, req)
-:     );
+:     ).resume();
 :    }
 :   ).on(
 :    "end",
