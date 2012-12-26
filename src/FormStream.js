@@ -49,6 +49,10 @@ function dictionaryListen(emitter, listeners){
  //would be the shortest implementation of dictionaryListen I can think of offhand
  //or at least the shortest one that meets my criteria for macho elegance
 
+ //and dictionaryToAttributeList can be defined as
+ function dictionaryToAttributeList(dict){
+  return Object.keys(dict).map(function(k){return [k, dict[k]];});
+ }
 }
 
 function bufferChunks(stream, callback){
@@ -95,7 +99,7 @@ function pipeStream(source, target){
 // http://www.w3.org/TR/html401/interact/forms.html#form-content-type
 function decodeUriParameter(chunk){
  return decodeURIComponent(
-  chunk.toString().replace("+", " ")
+  chunk.toString().replace("/\+/g", " ")
  );
 }
 function uriEncodedChunkSliceLength(chunk, buffer){
