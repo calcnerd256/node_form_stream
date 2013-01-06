@@ -150,6 +150,18 @@ FormStream.prototype.handleLexer = function handleLexer(lexer){
       uriEncodedChunkSliceLength
      ),
      decodeUriParameter
+    ).on(
+     "error",
+     function(e){
+      console.warn(
+       [
+	"FormStream",
+	this,
+	"URI decode exception",
+	e
+       ]
+      );
+     }
     )
    );
    input.resume();
