@@ -28,11 +28,15 @@ function FunctionImageStream(stream, fn){
  this.fn = fn;
  this.emitter = new EventSponge();
  stream.on(
-     "data",
-     compose(
-	 this.emitter.emit.bind(this.emitter, "data"),
-	 this.fn
-     )
+  "data",
+  function handleChunk(){
+   try{
+    this.emitter.emit("data", this.fn.apply(this, arguments));
+   }
+   catch(e){
+    this.emitter.emit("error", e);
+   }
+  }.bind(this)
  ).on(
      "end",
      this.emitter.emit.bind(this.emitter, "end")
