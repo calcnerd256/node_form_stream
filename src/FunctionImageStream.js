@@ -34,12 +34,12 @@ function FunctionImageStream(stream, fn){
     this.emitter.emit("data", this.fn.apply(this, arguments));
    }
    catch(e){
-    this.emitter.emit("error", e);
+    this.emitter.emit("error", e, arguments, this.fn, this);
    }
   }.bind(this)
  ).on(
-     "end",
-     this.emitter.emit.bind(this.emitter, "end")
+  "end",
+  this.emitter.emit.bind(this.emitter, "end")
  );
 }
 FunctionImageStream.prototype.on = function on(){
